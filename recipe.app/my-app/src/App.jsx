@@ -94,7 +94,7 @@ export default function RecipeFinder() {
       <section className="feedback">
         <h2>Feedback</h2>
         <p>Tell us what you think about Recipe Finder:</p>
-        <textarea placeholder="Your feedback..." />
+        <textarea className="feedback-textarea" placeholder="Your feedback..." />
         <br />
         <button className="btn-primary" style={{ marginTop: "8px" }}>
           Submit Feedback
