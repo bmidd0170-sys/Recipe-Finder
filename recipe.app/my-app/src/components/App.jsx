@@ -1,12 +1,14 @@
 import "./App.css";
-
+import Feedback from "../pages/Feedback";
+import { Routes, Route } from "react-router-dom";
 export default function RecipeFinder() {
   return (
     <div className="app container">
       {/* Header */}
+      
       <header className="header">
         <div className="brand">
-          <div className="logo">RF</div>
+          <div className="profile">RF</div>
           <div>
             <span className="title">Recipe Finder</span>
             <span className="subtitle">Discover & cook smarter</span>
@@ -19,7 +21,8 @@ export default function RecipeFinder() {
               🔍
             </button>
           </form>
-          <button className="btn-primary">Upload Image</button>
+          
+      <button className="Feedback-button">Feedback</button>
         </div>
       </header>
 
@@ -56,10 +59,7 @@ export default function RecipeFinder() {
         {/* Search Results / Cards */}
         <section className="content">
           <h2>Search Results</h2>
-          <div className="cards">
-            <article className="recipe-card">
-            </article>
-          </div>
+          <button className="btn-primary">Upload Image</button>
         </section>
 
         {/* Recipe Detail */}
@@ -91,16 +91,13 @@ export default function RecipeFinder() {
       </main>
 
       {/* Feedback Section */}
-      <section className="feedback">
-        <h2>Feedback</h2>
-        <p>Tell us what you think about Recipe Finder:</p>
-        <textarea className="feedback-textarea" placeholder="Your feedback..." />
-        <br />
-        <button className="btn-primary" style={{ marginTop: "8px" }}>
-          Submit Feedback
-        </button>
-      </section>
+      <Routes>
+        <Route path="/feedback" element={<Feedback />} />
+      </Routes>
 
+
+
+      
       {/* Footer */}
       <footer className="footer">
         <p>&copy; 2025 Recipe Finder. All rights reserved.</p>
