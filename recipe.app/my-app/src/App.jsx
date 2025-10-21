@@ -1,11 +1,10 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Feedback from "./pages/Feedback";
-import { MainPage } from "./Pages/Main-Page";
-import { ResultsPage } from "./Pages/Results-page";
+import MainPage from "./pages/Main-Page";
 import Profile from "./Pages/Profile";
 import { useProfile } from "./components/ProfileContext";
 import SavedRecipes from "./pages/SavedRecieps";
-
+import ResultsPage from "./pages/Results-page";
 
 
 export default function RecipeFinder() {
@@ -26,8 +25,12 @@ export default function RecipeFinder() {
 				</div>
 				<div>
 					<div>
-						<span className="title">Recipe Finder</span>
-						<span className="subtitle">Discover & cook smarter</span>
+					  <button className="Title-button">
+						  <Link to="/" className="home-link">
+							  <span className="title">Recipe Finder</span>
+							  <span className="subtitle"> Discover & cook smarter</span>
+						  </Link>
+						</button>
 					</div>
 				</div>
 
@@ -35,8 +38,13 @@ export default function RecipeFinder() {
 					{/*Saved Recipes Link*/}
 					<Link to="/saved-recipes" className="saved-recipes-link">
 						Saved Recipes
-					</Link>	
+					</Link>
+					{/* Results Link */}
+					<Link to="/results" className="results-link">
+						Results
+					</Link>
 					{/* Feedback Button */}
+
 					<Link to="/feedback" className="Feedback-button">
 						Feedback
 					</Link>

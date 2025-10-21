@@ -1,66 +1,54 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useOpenAI } from "../hook/openai"; // ✅ import your hook
 
-export function MainPage() {
-	const [dragActive, setDragActive] = useState(false);
-	const [fileName, setFileName] = useState("");
+export default function MainPage() {
+	const navigate = useNavigate();
+	const { generateRecipe, loading, error } = useOpenAI();
+	const [image, setImage] = useState(null);
+	const [file, setFile] = useState(null);
 
-	const handleDragOver = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setDragActive(true);
-	};
-
-	const handleDragLeave = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setDragActive(false);
-	};
-
-	const handleDrop = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setDragActive(false);
-
-		const file = e.dataTransfer.files[0];
-		if (file) {
-			setFileName(file.name);
-			console.log("Dropped file:", file);
-		}
-	};
-
-	const handleFileChange = (e) => {
+	const handleFileSelect = (e) => {
 		const file = e.target.files[0];
-		if (file) {
-			setFileName(file.name);
-			console.log("Selected file:", file);
+		if (file && file.type.startsWith("image/")) {
+			setFile(file);
+			setImage(URL.createObjectURL(file));
 		}
+	};
+
+	const handleSubmit = async () => {
+		if (!file) return alert("Please upload an image first!");
+		const aiText = await generateRecipe(file);
+		navigate("/results", { state: { image, aiText } });
 	};
 
 	return (
 		<div className="main">
-			{/* Sidebar */}
 			<aside className="sidebar">
 				<h3>Upload Dish</h3>
-
-				<div
-					className={`upload-area ${dragActive ? "active" : ""}`}
-					onDragOver={handleDragOver}
-					onDragLeave={handleDragLeave}
-					onDrop={handleDrop}
-				>
+				<div className="upload-area">
 					<label htmlFor="fileUpload" className="btn-upload">
 						Choose File
 						<input
 							type="file"
 							id="fileUpload"
 							style={{ display: "none" }}
-							onChange={handleFileChange}
+							accept="image/*"
+							onChange={handleFileSelect}
 						/>
 					</label>
-
-					<p>or drag &amp; drop here</p>
-					{fileName && <p className="file-name">📄 {fileName}</p>}
+					{image && <img src={image} alt="Preview" className="image-preview" />}
 				</div>
+
+				<button
+					className="submit-btn"
+					onClick={handleSubmit}
+					disabled={loading}
+				>
+					{loading ? "Generating..." : "Generate Recipe"}
+				</button>
+
+				{error && <p className="error-text">Error: {error.message}</p>}
 
 				<h3 style={{ marginTop: "16px" }}>Filters</h3>
 				<div className="filters">

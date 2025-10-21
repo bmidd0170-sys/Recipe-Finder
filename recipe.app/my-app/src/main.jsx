@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { ProfileProvider } from "./components/ProfileContext"; // adjust path if different
-import RecipeFinder from "./app"; 
+import RecipeFinder from "./App.jsx"; 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>

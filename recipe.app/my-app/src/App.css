@@ -438,6 +438,8 @@ body {
   background: #fff8f0;
   transition: all 0.25s ease;
   cursor: pointer;
+  height: 200px;
+  
 }
 
 .upload-area.active {
@@ -465,6 +467,7 @@ body {
 
 .btn-upload:hover {
   background: #e67a34;
+  
 }
 
 /* Filters section in sidebar */
@@ -485,4 +488,113 @@ body {
   accent-color: #f6872c;
   transform: scale(1.15);
   cursor: pointer;
+}
+
+
+
+/*Results Page */
+
+.result-page {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff8f0;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.result-title {
+  text-align: center;
+  color: #f6872c;
+  margin-bottom: 20px;
+}
+
+.image-container {
+  position: relative;
+  background: #fff;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.placeholder {
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+.upload-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #f6872c;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.upload-btn:hover {
+  background: #e67a34;
+}
+
+.description-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.instructions-label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  color: #444;
+}
+
+.instructions-box {
+  width: 97%;
+  height: 150px;
+  margin-top: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: none;
+  font-size: 15px;
+}
+
+.button-row {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.share-btn {
+  background: #ff8c42;
+  color: white;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.share-btn:hover {
+  background: #e67a34;
 }
