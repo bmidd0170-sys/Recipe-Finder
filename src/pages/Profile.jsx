@@ -1,6 +1,7 @@
 import { useProfile } from "../components/ProfileContext";
 import RecentReciepsProfile from "../components/RecentRecieps-Profile";
 import SavedReciepsProfile from "../components/SavedRecieps-Profile";
+
 export default function Profile() {
 	const { profileImage, setProfileImage } = useProfile();
 
