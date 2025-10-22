@@ -1,63 +1,62 @@
 // src/hooks/useOpenAI.js
-import { useState } from "react";
+import { useMutation } from '@tanstack/react-query';
 
 export function useOpenAI() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const generateRecipe = async (imageFile, filters = {}) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Convert the uploaded image to Base64
+  const mutation = useMutation({
+    mutationFn: async ({ imageFile, filters = {} }) => {
+      console.log("Generating recipe with filters:", filters);
+      
       const base64Image = await toBase64(imageFile);
-
-      const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: "gpt-4.1-mini",
-          input: [
+          model: "gpt-4o-mini",
+          messages: [
             {
               role: "user",
               content: [
                 {
-                  type: "input_text",
-                  text: `Describe a recipe based on this image and filters. Include instructions, ingredients, and filters: ${JSON.stringify(filters)}`,
+                  type: "text",
+                  text: `Describe a recipe based on this image and filters. Include instructions, ingredients, and filters: ${JSON.stringify(filters)}`
                 },
                 {
-                  type: "input_image",
-                  image_url: base64Image,
-                },
-              ],
-            },
+                  type: "image_url",
+                  image_url: base64Image
+                }
+              ]
+            }
           ],
-        }),
+          max_tokens: 1000
+        })
       });
 
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate recipe');
+      }
+
       const data = await response.json();
-      // You can inspect the result structure here
-      console.log("AI response:", data);
-
-      const resultText =
-        data?.output?.[0]?.content?.[0]?.text ||
-        "No description returned by AI.";
-
+      const resultText = data.choices?.[0]?.message?.content || "No description returned by AI.";
       return resultText;
-    } catch (err) {
-      console.error("Error calling OpenAI API:", err);
-      setError(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const generateRecipe = (imageFile, filters) => {
+    return mutation.mutateAsync({ imageFile, filters });
   };
 
-  return { generateRecipe, loading, error };
+  return {
+    generateRecipe,
+    loading: mutation.isPending,
+    error: mutation.error,
+    isError: mutation.isError,
+    reset: mutation.reset,
+  };
 }
 
 // Helper: convert image to Base64 for OpenAI input

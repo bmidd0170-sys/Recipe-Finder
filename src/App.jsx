@@ -1,10 +1,10 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Feedback from "./pages/Feedback";
-import MainPage from "./pages/Main-Page";
+import MainPage from "./pages/MainPage";
 import Profile from "./pages/Profile";
 import { useProfile } from "./components/ProfileContext";
 import SavedRecipes from "./pages/SavedRecieps";
-import ResultsPage from "./pages/Results-page";
+import ResultsPage from "./pages/ResultsPage";
 
 
 export default function RecipeFinder() {

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useOpenAI } from "../hook/openai"; // ✅ import your hook
+import { useGenerateRecipe } from "../hook/useGenerateRecipe";
 
 export default function MainPage() {
 	const navigate = useNavigate();
-	const { generateRecipe, loading, error } = useOpenAI();
+	const { mutateAsync, isLoading: loading, error } = useGenerateRecipe();
 	const [image, setImage] = useState(null);
 	const [file, setFile] = useState(null);
 	// Track filter checkboxes so we can send them to the OpenAI call
@@ -26,9 +26,13 @@ export default function MainPage() {
 
 	const handleSubmit = async () => {
 		if (!file) return alert("Please upload an image first!");
-		// Pass the currently selected filters to the OpenAI generator
-		const aiText = await generateRecipe(file, filters);
-		navigate("/results", { state: { image, aiText, filters } });
+		try {
+			const aiText = await mutateAsync({ file, filters });
+			navigate("/results", { state: { image, aiText, filters } });
+		} catch (e) {
+			// error is available from the hook
+			console.error("Generation failed", e);
+		}
 	};
 
 	return (

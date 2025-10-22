@@ -2,6 +2,40 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Running locally
+
+Install dependencies: `npm install` in the project root
+
+### Server proxy for OpenAI (do NOT expose your API key in the browser)
+
+This project includes a small Express proxy in `server/` to keep your OpenAI API key on the server.
+
+1. In `server/` copy `.env.example` to `.env` and paste your real key into `OPENAI_API_KEY`.
+
+```bash
+cd server
+npm install
+cp .env.example .env
+# edit .env and set OPENAI_API_KEY=sk-...
+npm start
+```
+
+2. Keep the server running while you use the frontend. The frontend now calls `/api/generate` which the server proxies to OpenAI.
+
+Security note: never commit a file containing the real secret key into version control. Use `.env` locally and environment variables in deployed environments.
+
+To run the frontend after the server is running:
+
+```bash
+# in project root
+npm install
+npm run dev
+```
+
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
