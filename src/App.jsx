@@ -1,7 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Feedback from "./pages/Feedback";
 import MainPage from "./pages/Main-Page";
-import Profile from "./Pages/Profile";
+import Profile from "./pages/Profile";
 import { useProfile } from "./components/ProfileContext";
 import SavedRecipes from "./pages/SavedRecieps";
 import ResultsPage from "./pages/Results-page";
