@@ -1,25 +1,21 @@
 import React, { useState } from "react";
 import { useAuth } from "../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-	const { login } = useAuth();
+	const { signInWithGoogle } = useAuth();
 	const navigate = useNavigate();
 
-	async function handleSubmit(e) {
-		e.preventDefault();
-
+	async function handleGoogleSignIn() {
 		try {
 			setError("");
 			setLoading(true);
-			await login(email, password);
-			navigate("/");
+			await signInWithGoogle();
+			navigate(-1); // Go back to the previous page
 		} catch (error) {
-			setError("Failed to sign in: " + error.message);
+			setError("Failed to sign in with Google: " + error.message);
 		} finally {
 			setLoading(false);
 		}
@@ -28,31 +24,23 @@ export default function Login() {
 	return (
 		<div className="login-page">
 			<div className="login-card">
-				<h2>Login</h2>
+				<h2>Sign In</h2>
 				{error && <div className="error-text">{error}</div>}
-				<form className="login-form" onSubmit={handleSubmit}>
-					<div className="form-group">
-						<input
-							type="email"
-							placeholder="Email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className="form-group">
-						<input
-							type="password"
-							placeholder="Password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
-					<button type="submit" className="login-button" disabled={loading}>
-						{loading ? "Logging in..." : "Login"}
+				<div className="login-options">
+					<button
+						onClick={handleGoogleSignIn}
+						className="google-signin-button"
+						disabled={loading}
+					>
+						{loading ? "Signing in..." : "Sign in with Google"}
 					</button>
-				</form>
+					<div className="or-divider">
+						<span>or</span>
+					</div>
+					<Link to="/recent-recipes" className="skip-signin-button">
+						Continue without signing in
+					</Link>
+				</div>
 			</div>
 		</div>
 	);

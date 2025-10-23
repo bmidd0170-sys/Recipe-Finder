@@ -6,6 +6,8 @@ import { useProfile } from "./components/ProfileContext";
 import SavedRecipes from "./pages/SavedRecieps";
 import ResultsPage from "./pages/ResultsPage";
 import Login from "./pages/Login";
+import RecentRecieps from "./components/RecentRecieps-Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { RecentRecipesProvider } from "./Context/RecentRecipesContext";
 import { SavesProvider } from "./Context/RecipeSaves";
 import { AuthProvider } from "./Context/AuthContext";
@@ -60,11 +62,26 @@ export default function RecipeFinder() {
 						{/* Main Page Routing */}
 						<Routes>
 							<Route path="/login" element={<Login />} />
-							<Route path="/saved-recipes" element={<SavedRecipes />} />
-							<Route path="/profile" element={<Profile />} />
+							<Route
+								path="/saved-recipes"
+								element={
+									<ProtectedRoute>
+										<SavedRecipes />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/profile"
+								element={
+									<ProtectedRoute>
+										<Profile />
+									</ProtectedRoute>
+								}
+							/>
 							<Route path="/" element={<MainPage />} />
 							<Route path="/feedback" element={<Feedback />} />
 							<Route path="/results" element={<ResultsPage />} />
+							<Route path="/recent-recipes" element={<RecentRecieps />} />
 						</Routes>
 
 						{/* Footer */}

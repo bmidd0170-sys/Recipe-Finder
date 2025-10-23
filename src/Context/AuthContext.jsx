@@ -3,6 +3,8 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 	onAuthStateChanged,
+	GoogleAuthProvider,
+	signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../config/firebase";
 
@@ -18,6 +20,11 @@ export function AuthProvider({ children }) {
 
 	function login(email, password) {
 		return signInWithEmailAndPassword(auth, email, password);
+	}
+
+	async function signInWithGoogle() {
+		const provider = new GoogleAuthProvider();
+		return signInWithPopup(auth, provider);
 	}
 
 	function logout() {
@@ -36,6 +43,7 @@ export function AuthProvider({ children }) {
 	const value = {
 		currentUser,
 		login,
+		signInWithGoogle,
 		logout,
 	};
 
