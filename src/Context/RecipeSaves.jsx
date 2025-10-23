@@ -14,21 +14,22 @@ export function SavesProvider({ children }) {
 		localStorage.setItem("saves", JSON.stringify(saves));
 	}, [saves]);
 
-	const addSave = (course) => {
+	const addSave = (recipe) => {
 		setSaves((prev) => {
-			if (prev.find((c) => c.id === course.id)) return prev; // avoid duplicates
-			return [...prev, course];
+			// Check for duplicates using the recipe text
+			if (prev.find((r) => r.aiText === recipe.aiText)) return prev;
+			return [...prev, { ...recipe, savedAt: new Date().toISOString() }];
 		});
 	};
 
-	const removeSave = (id) => {
-		setSaves((prev) => prev.filter((c) => c.id !== id));
+	const removeSave = (recipeText) => {
+		setSaves((prev) => prev.filter((r) => r.aiText !== recipeText));
 	};
 
-	const isSave = (id) => saves.some((c) => c.id === id);
+	const isSaved = (recipeText) => saves.some((r) => r.aiText === recipeText);
 
 	return (
-		<SavesContext.Provider value={{ saves, addSave, removeSave, isSave }}>
+		<SavesContext.Provider value={{ saves, addSave, removeSave, isSaved }}>
 			{children}
 		</SavesContext.Provider>
 	);

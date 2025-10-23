@@ -33,9 +33,7 @@ export default function Profile() {
 				</div>
 
 				<div className="profile-form">
-					<input type="text" placeholder="Username" />
-					<input type="password" placeholder="Password" />
-					<input type="email" placeholder="Email" />
+					
 					<textarea
 						placeholder="Utensils being used..."
 						className="utensils-input"

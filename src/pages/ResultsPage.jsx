@@ -1,13 +1,67 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useRecentRecipes } from "../Context/RecentRecipesContext";
+import { useSaves } from "../Context/RecipeSaves";
+import Markdown from "react-markdown";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function ResultsPage() {
 	const location = useLocation();
 	const { image, aiText, filters } = location.state || {};
+	const { addRecent } = useRecentRecipes();
+	const { addSave, removeSave, isSaved } = useSaves();
+
+	const handleSaveClick = () => {
+		if (aiText) {
+			const recipe = { image, aiText, filters };
+			if (isSaved(aiText)) {
+				removeSave(aiText);
+			} else {
+				addSave(recipe);
+			}
+		}
+	};
+
+	useEffect(() => {
+		if (aiText) {
+			addRecent({ image, aiText, filters });
+		}
+	}, [aiText, image, filters, addRecent]);
+
+	const extractTitle = (text) => {
+		// Get the first line as title
+		const firstLine = text.split("\n")[0];
+		return firstLine
+			.replace(/Recipe for |Instructions for |How to make /i, "")
+			.trim();
+	};
+
+	// If there's no recipe data, show a message
+	if (!location.state) {
+		return (
+			<div className="result-page">
+				<h2 className="result-title">No Recipe Selected</h2>
+				<div className="markdown-center">
+					<ErrorBoundary>
+						<Markdown>Go to the main page to generate a new recipe!</Markdown>
+					</ErrorBoundary>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="result-page">
-			<h2 className="result-title">Your Dish Result</h2>
+			<div className="result-header">
+				<h2 className="result-title">Your Dish Result</h2>
+				<button
+					className="save-button"
+					onClick={handleSaveClick}
+					title={isSaved(aiText) ? "Remove from saved recipes" : "Save recipe"}
+				>
+					{isSaved(aiText) ? "♥" : "♡"}
+				</button>
+			</div>
 
 			<div className="image-container">
 				{image ? (
@@ -17,11 +71,22 @@ export default function ResultsPage() {
 				)}
 			</div>
 
-			<textarea
-				className="instructions-box"
-				readOnly
-				value={aiText || "AI is still thinking..."}
-			/>
+			<div className="recipe-info">
+				<div className="recipe-title">
+					<h3>Dish Title</h3>
+					<ErrorBoundary>
+						<h3 className="dish-name">
+							{aiText ? extractTitle(aiText) : "Title not available..."}
+						</h3>
+					</ErrorBoundary>
+				</div>
+
+				<div className="recipe-details">
+					<ErrorBoundary>
+						<Markdown>{aiText || "AI is still thinking..."}</Markdown>
+					</ErrorBoundary>
+				</div>
+			</div>
 
 			{filters && (
 				<div className="selected-filters">

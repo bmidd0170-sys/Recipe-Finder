@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGenerateRecipe } from "../hook/useGenerateRecipe";
+import { useRecentRecipes } from "../Context/RecentRecipesContext";
+import { useSaves } from "../Context/RecipeSaves";
+import { findSimilarRecipe } from "../utils/recipeUtils";
 
 export default function MainPage() {
 	const navigate = useNavigate();
 	const { mutateAsync, isLoading: loading, error } = useGenerateRecipe();
 	const [image, setImage] = useState(null);
 	const [file, setFile] = useState(null);
+	const [isDragging, setIsDragging] = useState(false);
+	const { recentRecipes } = useRecentRecipes();
+	const { saves } = useSaves();
+	const [foundSimilar, setFoundSimilar] = useState(null);
 	// Track filter checkboxes so we can send them to the OpenAI call
 	const [filters, setFilters] = useState({
 		vegetarian: false,
@@ -24,8 +31,53 @@ export default function MainPage() {
 		}
 	};
 
+	const handleDragEnter = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(true);
+	};
+
+	const handleDragLeave = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(false);
+	};
+
+	const handleDragOver = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		e.dataTransfer.dropEffect = 'copy';
+		setIsDragging(true);
+	};
+
+	const handleDrop = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(false);
+
+		const droppedFile = e.dataTransfer.files[0];
+		if (droppedFile && droppedFile.type.startsWith("image/")) {
+			setFile(droppedFile);
+			setImage(URL.createObjectURL(droppedFile));
+		}
+	};
+
 	const handleSubmit = async () => {
 		if (!file) return alert("Please upload an image first!");
+
+		// Check for similar recipes first
+		const similarRecipe = findSimilarRecipe(
+			image,
+			filters,
+			recentRecipes,
+			saves
+		);
+
+		if (similarRecipe) {
+			setFoundSimilar(similarRecipe);
+			return; // Don't proceed with generation if we found a similar recipe
+		}
+
 		try {
 			const aiText = await mutateAsync({ file, filters });
 			navigate("/results", { state: { image, aiText, filters } });
@@ -39,29 +91,76 @@ export default function MainPage() {
 		<div className="main">
 			<aside className="sidebar">
 				<h3>Upload Dish</h3>
-				<div className="upload-area">
-					<label htmlFor="fileUpload" className="btn-upload">
-						Choose File
-						<input
-							type="file"
-							id="fileUpload"
-							style={{ display: "none" }}
-							accept="image/*"
-							onChange={handleFileSelect}
-						/>
-					</label>
-					{image && <img src={image} alt="Preview" className="image-preview" />}
+				<div 
+					className={`upload-area ${isDragging ? 'dragging' : ''}`}
+					onDragEnter={handleDragEnter}
+					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
+					onDrop={handleDrop}
+				>
+					{image ? (
+						<img src={image} alt="Preview" className="image-preview" />
+					) : (
+						<div className="upload-content">
+							<label htmlFor="fileUpload" className="btn-upload">
+								Choose File
+								<input
+									type="file"
+									id="fileUpload"
+									style={{ display: "none" }}
+									accept="image/*"
+									onChange={handleFileSelect}
+								/>
+							</label>
+						
+						</div>
+					)}
 				</div>
 
-				<button
-					className="submit-btn"
-					onClick={handleSubmit}
-					disabled={loading}
-				>
-					{loading ? "Generating..." : "Generate Recipe"}
-				</button>
+				{foundSimilar ? (
+					<div className="similar-recipe-alert">
+						<p>We found a similar recipe with matching filters!</p>
+						<div className="similar-recipe-actions">
+							<button
+								className="similar-btn"
+								onClick={() =>
+									navigate("/results", {
+										state: {
+											image,
+											aiText: foundSimilar.aiText,
+											filters: foundSimilar.filters,
+										},
+									})
+								}
+							>
+								Use Similar Recipe
+							</button>
+							<button
+								className="similar-btn secondary"
+								onClick={() => {
+									setFoundSimilar(null);
+									mutateAsync({ file, filters }).then((aiText) => {
+										navigate("/results", { state: { image, aiText, filters } });
+									});
+								}}
+							>
+								Generate New Recipe
+							</button>
+						</div>
+					</div>
+				) : (
+					<>
+						<button
+							className="submit-btn"
+							onClick={handleSubmit}
+							disabled={loading}
+						>
+							{loading ? "Generating..." : "Generate Recipe"}
+						</button>
 
-				{error && <p className="error-text">Error: {error.message}</p>}
+						{error && <p className="error-text">Error: {error.message}</p>}
+					</>
+				)}
 
 				<h3 style={{ marginTop: "16px" }}>Filters</h3>
 				<div className="filters">
