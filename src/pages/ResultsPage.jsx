@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecentRecipes } from "../Context/RecentRecipesContext";
 import { useSaves } from "../Context/RecipeSaves";
+import { useSharedRecipes } from "../Context/SharedRecipesContext";
 import Markdown from "react-markdown";
 import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function ResultsPage() {
 	const location = useLocation();
-	const { image, aiText, filters } = location.state || {};
+	const navigate = useNavigate();
+	const { recipeId } = useParams();
+	const { shareRecipe, getSharedRecipe } = useSharedRecipes();
+	const [shareUrl, setShareUrl] = useState("");
+	const [showShareTooltip, setShowShareTooltip] = useState(false);
+
+	// Get recipe data either from navigation state or shared recipes
+	const recipeData = recipeId ? getSharedRecipe(recipeId) : location.state;
+	const { image, aiText, filters } = recipeData || {};
+
 	const { addRecent } = useRecentRecipes();
 	const { addSave, removeSave, isSaved } = useSaves();
 
@@ -54,13 +64,34 @@ export default function ResultsPage() {
 		<div className="result-page">
 			<div className="result-header">
 				<h2 className="result-title">Your Dish Result</h2>
-				<button
-					className="save-button"
-					onClick={handleSaveClick}
-					title={isSaved(aiText) ? "Remove from saved recipes" : "Save recipe"}
-				>
-					{isSaved(aiText) ? "♥" : "♡"}
-				</button>
+				<div className="recipe-actions">
+					<button
+						className="save-button"
+						onClick={handleSaveClick}
+						title={
+							isSaved(aiText) ? "Remove from saved recipes" : "Save recipe"
+						}
+					>
+						{isSaved(aiText) ? "♥" : "♡"}
+					</button>
+					<button
+						className="share-button"
+						onClick={() => {
+							const id = shareRecipe({ image, aiText, filters });
+							const url = `${window.location.origin}/recipe/${id}`;
+							setShareUrl(url);
+							navigator.clipboard.writeText(url);
+							setShowShareTooltip(true);
+							setTimeout(() => setShowShareTooltip(false), 2000);
+						}}
+						title="Share recipe"
+					>
+						🔗
+					</button>
+					{showShareTooltip && (
+						<div className="share-tooltip">Link copied to clipboard!</div>
+					)}
+				</div>
 			</div>
 
 			<div className="image-container">

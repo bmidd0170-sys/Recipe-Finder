@@ -6,7 +6,7 @@ import { useSaves } from "../Context/RecipeSaves";
 import { findSimilarRecipe } from "../utils/recipeUtils";
 import LoadingScreen from "../components/LoadingScreen";
 import { topSearches, userFeedback } from "../data/mockData";
-import "./MainPage.css";
+
 
 export default function MainPage() {
 	const navigate = useNavigate();
