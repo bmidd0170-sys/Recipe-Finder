@@ -12,10 +12,22 @@ export default function Login() {
 		try {
 			setError("");
 			setLoading(true);
+			const provider = new GoogleAuthProvider();
+			// Add select_account to force account selection
+			provider.setCustomParameters({
+				prompt: 'select_account'
+			});
 			await signInWithGoogle();
 			navigate(-1); // Go back to the previous page
 		} catch (error) {
-			setError("Failed to sign in with Google: " + error.message);
+			console.error("Sign-in error:", error);
+			if (error.code === 'auth/unauthorized-domain') {
+				setError("This domain is not authorized. Please contact the administrator.");
+			} else if (error.code === 'auth/popup-blocked') {
+				setError("Please allow popups for this website to sign in with Google.");
+			} else {
+				setError("Failed to sign in with Google: " + error.message);
+			}
 		} finally {
 			setLoading(false);
 		}
