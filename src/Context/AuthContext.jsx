@@ -5,8 +5,10 @@ import {
 	onAuthStateChanged,
 	GoogleAuthProvider,
 	signInWithPopup,
+	setPersistence,
+	browserLocalPersistence
 } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, googleProvider } from "../config/firebase";
 
 const AuthContext = createContext();
 
@@ -23,16 +25,33 @@ export function AuthProvider({ children }) {
 	}
 
 	async function signInWithGoogle() {
-		const provider = new GoogleAuthProvider();
-		provider.setCustomParameters({
-			prompt: "select_account",
-		});
 		try {
-			const result = await signInWithPopup(auth, provider);
+			// Set persistence to LOCAL
+			await setPersistence(auth, browserLocalPersistence);
+			
+			// Attempt sign in
+			const result = await signInWithPopup(auth, googleProvider);
+			
+			// Log success
+			console.log("Successfully signed in with Google");
 			return result;
 		} catch (error) {
 			console.error("Google sign in error:", error);
-			throw error;
+			
+			// Handle specific error cases
+			switch (error.code) {
+				case 'auth/popup-closed-by-user':
+					throw new Error('Sign-in window was closed before completion.');
+				case 'auth/unauthorized-domain':
+					console.error("Current domain:", window.location.origin);
+					throw new Error('This domain is not authorized. Please ensure you\'re accessing from the correct URL.');
+				case 'auth/cancelled-popup-request':
+					throw new Error('Another sign-in attempt is in progress.');
+				case 'auth/popup-blocked':
+					throw new Error('Sign-in popup was blocked by the browser. Please enable popups for this site.');
+				default:
+					throw new Error(`Authentication failed: ${error.message}`);
+			}
 		}
 	}
 
