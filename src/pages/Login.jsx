@@ -1,14 +1,27 @@
 import React, { useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { GoogleAuthProvider } from "firebase/auth";
 
 export default function Login() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-	const { signInWithGoogle } = useAuth();
+	const { signInWithGoogle, setUser } = useAuth();
 	const navigate = useNavigate();
 
+	const handleLogin = async () => {
+		try {
+			setError("");
+			setLoading(true);
+			const loggedUser = await signInWithGoogle();
+			setUser(loggedUser);
+			navigate(-1); // Go back to the previous page
+		} catch (error) {
+			console.error("Sign-in error:", error);
+			setError("Failed to sign in with Google: " + error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 	async function handleGoogleSignIn() {
 		try {
 			setError("");
@@ -40,7 +53,7 @@ export default function Login() {
 				{error && <div className="error-text">{error}</div>}
 				<div className="login-options">
 					<button
-						onClick={handleGoogleSignIn}
+						onClick={handleLogin}
 						className="google-signin-button"
 						disabled={loading}
 					>

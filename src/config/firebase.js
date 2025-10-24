@@ -1,53 +1,29 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAoSduYqNgNvXwtAB_1lcn3wNkpO_IEWos",
-  authDomain: "recipe-finder-7a64a.firebaseapp.com",
-  projectId: "recipe-finder-7a64a",
-  storageBucket: "recipe-finder-7a64a.appspot.com",
-  messagingSenderId: "808233739825",
-  appId: "1:808233739825:web:9f9f9f9f9f9f9f9f9f9f9f"
+  authDomain: "littlechef-167a1.firebaseapp.com",
+  projectId: "littlechef-167a1",
+  storageBucket: "littlechef-167a1.firebasestorage.app",
+  messagingSenderId: "825832087817",
+  appId: "1:825832087817:web:79806eff800ed2f47c33d8"
 };
 
 // Initialize Firebase
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (error) {
-  console.error("Firebase initialization error:", error);
-  throw error;
-}
+const app = initializeApp(firebaseConfig);
 
-// Get Auth instance
-const auth = getAuth(app);
+// Initialize Firebase
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
-// Configure Google Auth Provider
-const googleProvider = new GoogleAuthProvider();
 
-// Add scopes for Google OAuth
-googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
-googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+export const signInWithGoogle = async () => {
+  const result = await signInWithPopup(auth, googleProvider);
+  return result.user;
+};
 
-// Configure provider settings
-googleProvider.setCustomParameters({
-  prompt: 'select_account',
-  login_hint: 'user@example.com'
-});
-
-// Set language to browser's language
-auth.languageCode = navigator.language || 'en';
-
-// Enable local emulator if in development
-if (import.meta.env.DEV) {
-  try {
-    connectAuthEmulator(auth, "http://localhost:9099");
-  } catch (error) {
-    console.error("Auth emulator connection error:", error);
-  }
-}
-
-export { auth, googleProvider };
-export default app;
+// Default export for the firebase configuration
+export default { auth, googleProvider, signInWithGoogle };
