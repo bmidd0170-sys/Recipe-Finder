@@ -24,7 +24,16 @@ export function AuthProvider({ children }) {
 
 	async function signInWithGoogle() {
 		const provider = new GoogleAuthProvider();
-		return signInWithPopup(auth, provider);
+		provider.setCustomParameters({
+			prompt: "select_account",
+		});
+		try {
+			const result = await signInWithPopup(auth, provider);
+			return result;
+		} catch (error) {
+			console.error("Google sign in error:", error);
+			throw error;
+		}
 	}
 
 	function logout() {
