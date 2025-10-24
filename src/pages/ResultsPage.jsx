@@ -117,9 +117,7 @@ export default function ResultsPage() {
 					{showShareTooltip && (
 						<div className="share-tooltip">Link copied to clipboard!</div>
 					)}
-					{error && (
-						<div className="error-tooltip">{error}</div>
-					)}
+					{error && <div className="error-tooltip">{error}</div>}
 				</div>
 			</div>
 

@@ -1,12 +1,6 @@
 import { createContext, useContext, useState } from "react";
-import {
-	getFirestore,
-	collection,
-	doc,
-	setDoc,
-	getDoc,
-} from "firebase/firestore";
-import { app } from "../config/firebase";
+import { collection, doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 const SharedRecipesContext = createContext();
 
@@ -17,7 +11,6 @@ export function useSharedRecipes() {
 export function SharedRecipesProvider({ children }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-	const db = getFirestore(app);
 
 	// Generate a unique ID for a recipe
 	const generateRecipeId = () => {

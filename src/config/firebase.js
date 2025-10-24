@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -49,5 +50,8 @@ if (import.meta.env.DEV) {
   }
 }
 
-export { auth, googleProvider };
+// Initialize Firestore
+const db = getFirestore(app);
+
+export { auth, googleProvider, db };
 export default app;
