@@ -10,12 +10,30 @@ export default function ResultsPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const { recipeId } = useParams();
-	const { shareRecipe, getSharedRecipe } = useSharedRecipes();
+	const { shareRecipe, getSharedRecipe, loading } = useSharedRecipes();
 	const [shareUrl, setShareUrl] = useState("");
 	const [showShareTooltip, setShowShareTooltip] = useState(false);
+	const [recipeData, setRecipeData] = useState(null);
+	const [shareLoading, setShareLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-	// Get recipe data either from navigation state or shared recipes
-	const recipeData = recipeId ? getSharedRecipe(recipeId) : location.state;
+	useEffect(() => {
+		async function loadSharedRecipe() {
+			try {
+				const data = await getSharedRecipe(recipeId);
+				setRecipeData(data);
+			} catch (err) {
+				setError(err.message);
+			}
+		}
+
+		if (recipeId) {
+			loadSharedRecipe();
+		} else {
+			setRecipeData(location.state);
+		}
+	}, [recipeId, location.state, getSharedRecipe]);
+
 	const { image, aiText, filters } = recipeData || {};
 
 	const { addRecent } = useRecentRecipes();
@@ -76,20 +94,31 @@ export default function ResultsPage() {
 					</button>
 					<button
 						className="share-button"
-						onClick={() => {
-							const id = shareRecipe({ image, aiText, filters });
-							const url = `${window.location.origin}/recipe/${id}`;
-							setShareUrl(url);
-							navigator.clipboard.writeText(url);
-							setShowShareTooltip(true);
-							setTimeout(() => setShowShareTooltip(false), 2000);
+						onClick={async () => {
+							try {
+								setShareLoading(true);
+								const id = await shareRecipe({ image, aiText, filters });
+								const url = `${window.location.origin}/recipe/${id}`;
+								await navigator.clipboard.writeText(url);
+								setShareUrl(url);
+								setShowShareTooltip(true);
+								setTimeout(() => setShowShareTooltip(false), 2000);
+							} catch (err) {
+								setError("Failed to share recipe: " + err.message);
+							} finally {
+								setShareLoading(false);
+							}
 						}}
+						disabled={shareLoading}
 						title="Share recipe"
 					>
-						🔗
+						{shareLoading ? "..." : "🔗"}
 					</button>
 					{showShareTooltip && (
 						<div className="share-tooltip">Link copied to clipboard!</div>
+					)}
+					{error && (
+						<div className="error-tooltip">{error}</div>
 					)}
 				</div>
 			</div>
