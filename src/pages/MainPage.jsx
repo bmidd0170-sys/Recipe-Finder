@@ -5,6 +5,8 @@ import { useRecentRecipes } from "../Context/RecentRecipesContext";
 import { useSaves } from "../Context/RecipeSaves";
 import { findSimilarRecipe } from "../utils/recipeUtils";
 import LoadingScreen from "../components/LoadingScreen";
+import { topSearches, userFeedback } from "../data/mockData";
+import "./MainPage.css";
 
 export default function MainPage() {
 	const navigate = useNavigate();
@@ -88,9 +90,28 @@ export default function MainPage() {
 		}
 	};
 
+	const renderStars = (rating) => {
+		return "★".repeat(rating) + "☆".repeat(5 - rating);
+	};
+
 	return (
 		<div className="main">
 			{loading && <LoadingScreen />}
+			{/* Top Searches Section */}
+			<section className="top-searches">
+				<h2>Trending Recipes</h2>
+				{topSearches.map((item) => (
+					<div key={item.id} className="search-item">
+						<img src={item.imageUrl} alt={item.name} />
+						<div className="search-item-info">
+							<div className="search-item-name">{item.name}</div>
+							<div className="search-count">{item.searchCount} searches</div>
+						</div>
+					</div>
+				))}
+			</section>
+
+			{/* Main Upload Section */}
 			<aside className="sidebar">
 				<h3>Upload Dish</h3>
 				<div
@@ -222,6 +243,30 @@ export default function MainPage() {
 					</div>
 				</div>
 			</aside>
+
+			{/* User Feedback Section */}
+			<section className="user-feedback">
+				<h2>Recent Reviews</h2>
+				{userFeedback.map((feedback) => (
+					<div key={feedback.id} className="feedback-item">
+						<div className="feedback-header">
+							<img
+								src={feedback.user.avatar}
+								alt={feedback.user.name}
+								className="user-avatar"
+							/>
+							<div className="user-info">
+								<div className="user-name">{feedback.user.name}</div>
+								<div className="user-level">{feedback.user.level}</div>
+							</div>
+						</div>
+						<div className="feedback-recipe">{feedback.recipe}</div>
+						<div className="star-rating">{renderStars(feedback.rating)}</div>
+						<p className="feedback-comment">{feedback.comment}</p>
+						<div className="feedback-date">{feedback.date}</div>
+					</div>
+				))}
+			</section>
 		</div>
 	);
 }
