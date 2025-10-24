@@ -4,6 +4,7 @@ import { useGenerateRecipe } from "../hook/useGenerateRecipe";
 import { useRecentRecipes } from "../Context/RecentRecipesContext";
 import { useSaves } from "../Context/RecipeSaves";
 import { findSimilarRecipe } from "../utils/recipeUtils";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function MainPage() {
 	const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function MainPage() {
 	const handleDragOver = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		e.dataTransfer.dropEffect = 'copy';
+		e.dataTransfer.dropEffect = "copy";
 		setIsDragging(true);
 	};
 
@@ -89,10 +90,11 @@ export default function MainPage() {
 
 	return (
 		<div className="main">
+			{loading && <LoadingScreen />}
 			<aside className="sidebar">
 				<h3>Upload Dish</h3>
-				<div 
-					className={`upload-area ${isDragging ? 'dragging' : ''}`}
+				<div
+					className={`upload-area ${isDragging ? "dragging" : ""}`}
 					onDragEnter={handleDragEnter}
 					onDragOver={handleDragOver}
 					onDragLeave={handleDragLeave}
@@ -112,7 +114,6 @@ export default function MainPage() {
 									onChange={handleFileSelect}
 								/>
 							</label>
-						
 						</div>
 					)}
 				</div>
