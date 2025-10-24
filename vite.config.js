@@ -14,6 +14,7 @@ export default defineConfig({
       },
     },
   },
+  publicDir: 'public',
   build: {
     chunkSizeWarningLimit: 1600,
     rollupOptions: {
