@@ -1576,193 +1576,76 @@ body {
   max-width: 1400px;
   margin: 0 auto;
 }
-
-
-.recipe-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.share-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-  transition: transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f5f5f5;
-}
-
-.share-button:hover {
-  transform: scale(1.1);
-  background-color: #e0e0e0;
-}
-
-.share-tooltip {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #333;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  animation: fadeIn 0.3s ease-in-out;
-  z-index: 1000;
-}
-
-.share-tooltip::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #333;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.result-header {
+.share-button-container {
   position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.recipe-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.share-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px;
-  transition: transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f5f5f5;
-}
-
-.share-button:hover {
-  transform: scale(1.1);
-  background-color: #e0e0e0;
-}
-
-.share-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.share-tooltip,
-.error-tooltip {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  animation: fadeIn 0.3s ease-in-out;
-  z-index: 1000;
-}
-
-.share-tooltip {
-  background-color: #333;
-  color: white;
-}
-
-.error-tooltip {
-  background-color: #ff4444;
-  color: white;
-}
-
-.share-tooltip::before,
-.error-tooltip::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-}
-
-.share-tooltip::before {
-  border-bottom: 5px solid #333;
-}
-
-.error-tooltip::before {
-  border-bottom: 5px solid #ff4444;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.result-header {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.loading-indicator {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+.share-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-button:hover {
+  background: #f0f0f0;
+  color: #333;
+  transform: scale(1.1);
+}
+
+.share-tooltip {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
   }
 
-  100% {
-    transform: rotate(360deg);
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
+}
+.recipe-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.save-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #ff4b4b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-button:hover {
+  transform: scale(1.1);
+  background: #f0f0f0;
 }

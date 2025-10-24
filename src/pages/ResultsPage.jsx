@@ -1,62 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useRecentRecipes } from "../Context/RecentRecipesContext";
 import { useSaves } from "../Context/RecipeSaves";
-import { useSharedRecipes } from "../Context/SharedRecipesContext";
 import Markdown from "react-markdown";
 import ErrorBoundary from "../components/ErrorBoundary";
+import ShareButton from "../components/ShareButton";
 
 export default function ResultsPage() {
 	const location = useLocation();
-	const navigate = useNavigate();
-	const { recipeId } = useParams();
-	const { shareRecipe, getSharedRecipe, loading } = useSharedRecipes();
-	const [shareUrl, setShareUrl] = useState("");
-	const [showShareTooltip, setShowShareTooltip] = useState(false);
+	const [searchParams] = useSearchParams();
 	const [recipeData, setRecipeData] = useState(null);
-	const [shareLoading, setShareLoading] = useState(false);
-	const [error, setError] = useState(null);
-
-	useEffect(() => {
-		async function loadSharedRecipe() {
-			try {
-				const data = await getSharedRecipe(recipeId);
-				setRecipeData(data);
-			} catch (err) {
-				setError(err.message);
-			}
-		}
-
-		if (recipeId) {
-			loadSharedRecipe();
-		} else {
-			setRecipeData(location.state);
-		}
-	}, [recipeId, location.state, getSharedRecipe]);
-
-	const { image, aiText, filters } = recipeData || {};
-
 	const { addRecent } = useRecentRecipes();
 	const { addSave, removeSave, isSaved } = useSaves();
 
-	const handleSaveClick = () => {
-		if (aiText) {
-			const recipe = { image, aiText, filters };
-			if (isSaved(aiText)) {
-				removeSave(aiText);
-			} else {
-				addSave(recipe);
-			}
-		}
-	};
-
-	useEffect(() => {
-		if (aiText) {
-			addRecent({ image, aiText, filters });
-		}
-	}, [aiText, image, filters, addRecent]);
-
 	const extractTitle = (text) => {
+		if (!text) return "";
 		// Get the first line as title
 		const firstLine = text.split("\n")[0];
 		return firstLine
@@ -64,8 +22,43 @@ export default function ResultsPage() {
 			.trim();
 	};
 
+	const handleSaveClick = () => {
+		if (recipeData?.aiText) {
+			if (isSaved(recipeData.aiText)) {
+				removeSave(recipeData.aiText);
+			} else {
+				addSave(recipeData);
+			}
+		}
+	};
+
+	useEffect(() => {
+		// Try to get recipe data from URL parameters first
+		const sharedRecipe = searchParams.get("recipe");
+		if (sharedRecipe) {
+			try {
+				const parsed = JSON.parse(sharedRecipe);
+				setRecipeData(parsed);
+				if (parsed.aiText) {
+					addRecent(parsed);
+				}
+			} catch (error) {
+				console.error("Error parsing shared recipe:", error);
+			}
+		} else if (location.state) {
+			// If no URL parameters, use location state
+			const { image, aiText, filters } = location.state;
+			setRecipeData({
+				image,
+				aiText,
+				filters,
+				title: extractTitle(aiText),
+			});
+		}
+	}, [searchParams, location.state, addRecent]);
+
 	// If there's no recipe data, show a message
-	if (!location.state) {
+	if (!recipeData) {
 		return (
 			<div className="result-page">
 				<h2 className="result-title">No Recipe Selected</h2>
@@ -83,47 +76,24 @@ export default function ResultsPage() {
 			<div className="result-header">
 				<h2 className="result-title">Your Dish Result</h2>
 				<div className="recipe-actions">
+					<ShareButton recipeData={recipeData} />
 					<button
 						className="save-button"
 						onClick={handleSaveClick}
 						title={
-							isSaved(aiText) ? "Remove from saved recipes" : "Save recipe"
+							isSaved(recipeData.aiText)
+								? "Remove from saved recipes"
+								: "Save recipe"
 						}
 					>
-						{isSaved(aiText) ? "♥" : "♡"}
+						{isSaved(recipeData.aiText) ? "♥" : "♡"}
 					</button>
-					<button
-						className="share-button"
-						onClick={async () => {
-							try {
-								setShareLoading(true);
-								const id = await shareRecipe({ image, aiText, filters });
-								const url = `${window.location.origin}/recipe/${id}`;
-								await navigator.clipboard.writeText(url);
-								setShareUrl(url);
-								setShowShareTooltip(true);
-								setTimeout(() => setShowShareTooltip(false), 2000);
-							} catch (err) {
-								setError("Failed to share recipe: " + err.message);
-							} finally {
-								setShareLoading(false);
-							}
-						}}
-						disabled={shareLoading}
-						title="Share recipe"
-					>
-						{shareLoading ? "..." : "🔗"}
-					</button>
-					{showShareTooltip && (
-						<div className="share-tooltip">Link copied to clipboard!</div>
-					)}
-					{error && <div className="error-tooltip">{error}</div>}
 				</div>
 			</div>
 
 			<div className="image-container">
-				{image ? (
-					<img src={image} alt="Dish" className="preview-image" />
+				{recipeData.image ? (
+					<img src={recipeData.image} alt="Dish" className="preview-image" />
 				) : (
 					<p>No image available</p>
 				)}
@@ -134,31 +104,36 @@ export default function ResultsPage() {
 					<h3>Dish Title</h3>
 					<ErrorBoundary>
 						<h3 className="dish-name">
-							{aiText ? extractTitle(aiText) : "Title not available..."}
+							{recipeData.aiText
+								? extractTitle(recipeData.aiText)
+								: "Title not available..."}
 						</h3>
 					</ErrorBoundary>
 				</div>
 
 				<div className="recipe-details">
 					<ErrorBoundary>
-						<Markdown>{aiText || "AI is still thinking..."}</Markdown>
+						<Markdown>
+							{recipeData.aiText || "AI is still thinking..."}
+						</Markdown>
 					</ErrorBoundary>
 				</div>
 			</div>
 
-			{filters && (
+			{recipeData.filters && (
 				<div className="selected-filters">
 					<h4>Applied Filters:</h4>
 					<ul>
-						{filters.vegetarian && <li>Vegetarian</li>}
-						{filters.vegan && <li>Vegan</li>}
-						{filters.glutenFree && <li>Gluten Free</li>}
-						{filters.otherEnabled && filters.otherText && (
-							<li>Other: {filters.otherText}</li>
-						)}
-						{!filters.vegetarian && !filters.vegan && !filters.glutenFree && (
-							<li>None</li>
-						)}
+						{recipeData.filters.vegetarian && <li>Vegetarian</li>}
+						{recipeData.filters.vegan && <li>Vegan</li>}
+						{recipeData.filters.glutenFree && <li>Gluten Free</li>}
+						{recipeData.filters.otherEnabled &&
+							recipeData.filters.otherText && (
+								<li>Other: {recipeData.filters.otherText}</li>
+							)}
+						{!recipeData.filters.vegetarian &&
+							!recipeData.filters.vegan &&
+							!recipeData.filters.glutenFree && <li>None</li>}
 					</ul>
 				</div>
 			)}
