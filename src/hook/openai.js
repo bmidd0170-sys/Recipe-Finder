@@ -22,7 +22,7 @@ export function useOpenAI() {
               content: [
                 {
                   type: "text",
-                  text: `Indentify the food in the image and describe a recipe based on it and the filters given. Include instructions, ingredients, and filters: ${JSON.stringify(filters)}`
+                  text: `Describe a recipe based on this image and filters. Include instructions, ingredients, and filters: ${JSON.stringify(filters)}`
                 },
                 {
                   type: "image_url",
