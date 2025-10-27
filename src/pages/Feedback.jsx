@@ -45,6 +45,11 @@ export default function Feedback() {
 				success: true,
 				message: "Thank you! Your feedback has been submitted successfully.",
 			});
+
+			// Clear success message after 3 seconds
+			setTimeout(() => {
+				setSubmitStatus({ show: false, success: false, message: "" });
+			}, 3000);
 		} catch (error) {
 			console.error("Error submitting feedback:", error);
 			setSubmitStatus({
@@ -63,13 +68,7 @@ export default function Feedback() {
 			<h1 className="feedback-title">Feedback</h1>
 
 			{submitStatus.show && (
-				<div
-					className={`feedback-status ${
-						submitStatus.success ? "success" : "error"
-					}`}
-				>
-					{submitStatus.message}
-				</div>
+				<div className="feedback-status success">{submitStatus.message}</div>
 			)}
 
 			<textarea

@@ -7,7 +7,6 @@ import { findSimilarRecipe } from "../utils/recipeUtils";
 import LoadingScreen from "../components/LoadingScreen";
 import { topSearches, userFeedback } from "../data/mockData";
 
-
 export default function MainPage() {
 	const navigate = useNavigate();
 	const { mutateAsync, isLoading: loading, error } = useGenerateRecipe();
@@ -81,13 +80,8 @@ export default function MainPage() {
 			return; // Don't proceed with generation if we found a similar recipe
 		}
 
-		try {
-			const aiText = await mutateAsync({ file, filters });
-			navigate("/results", { state: { image, aiText, filters } });
-		} catch (e) {
-			// error is available from the hook
-			console.error("Generation failed", e);
-		}
+		// Navigate to loading page with necessary data
+		navigate("/loading", { state: { file, filters, image } });
 	};
 
 	const renderStars = (rating) => {
@@ -96,7 +90,6 @@ export default function MainPage() {
 
 	return (
 		<div className="main">
-			{loading && <LoadingScreen />}
 			{/* Top Searches Section */}
 			<section className="top-searches">
 				<h2>Trending Recipes</h2>
@@ -161,9 +154,8 @@ export default function MainPage() {
 								className="similar-btn secondary"
 								onClick={() => {
 									setFoundSimilar(null);
-									mutateAsync({ file, filters }).then((aiText) => {
-										navigate("/results", { state: { image, aiText, filters } });
-									});
+									// Use the same loading page navigation as handleSubmit
+									navigate("/loading", { state: { file, filters, image } });
 								}}
 							>
 								Generate New Recipe

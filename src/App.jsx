@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Feedback from "./pages/Feedback";
 import MainPage from "./pages/MainPage";
+import LoadingPage from "./pages/LoadingPage";
 import Profile from "./pages/Profile";
 import AdminFeedback from "./pages/AdminFeedback";
 import { useProfile } from "./components/ProfileContext";
@@ -79,6 +80,12 @@ export default function RecipeFinder() {
 									</ProtectedRoute>
 								}
 							/>
+
+							<Route path="/" element={<MainPage />} />
+							<Route path="/loading" element={<LoadingPage />} />
+							<Route path="/feedback" element={<Feedback />} />
+							<Route path="/results" element={<ResultsPage />} />
+							<Route path="/recent-recipes" element={<RecentRecieps />} />
 							<Route
 								path="/admin/feedback"
 								element={
@@ -87,10 +94,6 @@ export default function RecipeFinder() {
 									</ProtectedRoute>
 								}
 							/>
-							<Route path="/" element={<MainPage />} />
-							<Route path="/feedback" element={<Feedback />} />
-							<Route path="/results" element={<ResultsPage />} />
-							<Route path="/recent-recipes" element={<RecentRecieps />} />
 						</Routes>
 
 						{/* Footer */}
