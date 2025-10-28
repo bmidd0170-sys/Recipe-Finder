@@ -75,25 +75,31 @@ export default function ResultsPage() {
 		<div className="result-page">
 			<div className="result-header">
 				<h2 className="result-title">Your Dish Result</h2>
-				<div className="recipe-actions">
-					<ShareButton recipeData={recipeData} />
-					<button
-						className="save-button"
-						onClick={handleSaveClick}
-						title={
-							isSaved(recipeData.aiText)
-								? "Remove from saved recipes"
-								: "Save recipe"
-						}
-					>
-						{isSaved(recipeData.aiText) ? "♥" : "♡"}
-					</button>
-				</div>
 			</div>
 
 			<div className="image-container">
 				{recipeData.image ? (
-					<img src={recipeData.image} alt="Dish" className="preview-image" />
+					<>
+						<img src={recipeData.image} alt="Dish" className="preview-image" />
+						<div className="action-buttons">
+							<button
+								className="action-button-f"
+								onClick={handleSaveClick}
+								title={
+									isSaved(recipeData.aiText)
+										? "Remove from saved recipes"
+										: "Save recipe"
+								}
+							>
+								<i>{isSaved(recipeData.aiText) ? "♥" : "♡"}</i>
+								<span>Favorite</span>
+							</button>
+							<div className="action-button-s">
+								<ShareButton recipeData={recipeData} />
+								<span>Share</span>
+							</div>
+						</div>
+					</>
 				) : (
 					<p>No image available</p>
 				)}
