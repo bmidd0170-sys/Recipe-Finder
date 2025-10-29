@@ -17,7 +17,7 @@ export const userFeedback = [
         id: 1,
         user: {
             name: "Emma Thompson",
-            avatar: "https://source.unsplash.com/random/50x50/?woman",
+            avatar: "/images/profiles/profile1.svg",
             level: "Master Chef"
         },
         recipe: "Spaghetti Carbonara",
@@ -29,7 +29,7 @@ export const userFeedback = [
         id: 2,
         user: {
             name: "James Chen",
-            avatar: "https://source.unsplash.com/random/50x50/?man",
+            avatar: "/images/profiles/profile2.svg",
             level: "Home Cook"
         },
         recipe: "Thai Green Curry",
@@ -41,7 +41,7 @@ export const userFeedback = [
         id: 3,
         user: {
             name: "Sofia Rodriguez",
-            avatar: "https://source.unsplash.com/random/50x50/?girl",
+            avatar: "/images/profiles/profile3.svg",
             level: "Food Enthusiast"
         },
         recipe: "Mushroom Risotto",
@@ -53,7 +53,7 @@ export const userFeedback = [
         id: 4,
         user: {
             name: "Michael O'Connor",
-            avatar: "https://source.unsplash.com/random/50x50/?boy",
+            avatar: "/images/profiles/profile4.svg",
             level: "Amateur Chef"
         },
         recipe: "Beef Burgundy",
@@ -65,7 +65,7 @@ export const userFeedback = [
         id: 5,
         user: {
             name: "Laura Kim",
-            avatar: "https://source.unsplash.com/random/50x50/?person",
+            avatar: "/images/profiles/profile5.svg",
             level: "Cooking Enthusiast"
         },
         recipe: "Korean BBQ",

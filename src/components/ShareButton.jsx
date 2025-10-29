@@ -2,12 +2,33 @@ import React, { useState } from "react";
 
 const ShareButton = ({ recipeData }) => {
 	const [showTooltip, setShowTooltip] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
-	const handleShare = async () => {
+	const handleShare = async (e) => {
+		e.stopPropagation(); // Prevent parent button click
+		if (isLoading) return; // Prevent multiple clicks while loading
+
+		setIsLoading(true);
 		try {
-			// Create a URL-friendly version of the recipe data
-			const shareableData = encodeURIComponent(JSON.stringify(recipeData));
-			const shareUrl = `${window.location.origin}/results?recipe=${shareableData}`;
+			if (!recipeData) {
+				console.error("No recipe data to share");
+				return;
+			}
+
+			// Create a clean version of the recipe data for sharing
+			const shareableData = {
+				aiText: recipeData.aiText,
+				filters: recipeData.filters,
+				title: recipeData.title,
+			};
+
+			const shareableDataString = encodeURIComponent(
+				JSON.stringify(shareableData)
+			);
+			const shareUrl = `${window.location.origin}/results?recipe=${shareableDataString}`;
+
+			// Add a small delay to make the loading state visible
+			await new Promise((resolve) => setTimeout(resolve, 500));
 
 			// Try to use the Web Share API if available
 			if (navigator.share) {
@@ -26,23 +47,20 @@ const ShareButton = ({ recipeData }) => {
 			}
 		} catch (error) {
 			console.error("Error sharing recipe:", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	return (
-		<div className="share-button-container">
-			<button
-				onClick={handleShare}
-				aria-label="Share recipe"
-				style={{
-					background: "none",
-					border: "none",
-					cursor: "pointer",
-					fontSize: "24px",
-				}}
-			>
+		<div className="share-button-container" onClick={handleShare}>
+			{isLoading ? (
+				<div className="share-loading">
+					<div className="share-spinner"></div>
+				</div>
+			) : (
 				<i>↗</i>
-			</button>
+			)}
 			{showTooltip && (
 				<div className="share-tooltip">Link copied to clipboard!</div>
 			)}

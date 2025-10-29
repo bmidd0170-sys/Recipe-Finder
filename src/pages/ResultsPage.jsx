@@ -94,10 +94,10 @@ export default function ResultsPage() {
 								<i>{isSaved(recipeData.aiText) ? "♥" : "♡"}</i>
 								<span>Favorite</span>
 							</button>
-							<div className="action-button-s">
+							<button className="action-button-s" onClick={() => {}}>
 								<ShareButton recipeData={recipeData} />
 								<span>Share</span>
-							</div>
+							</button>
 						</div>
 					</>
 				) : (

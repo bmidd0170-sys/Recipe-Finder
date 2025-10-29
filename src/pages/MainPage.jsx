@@ -115,7 +115,19 @@ export default function MainPage() {
 					onDrop={handleDrop}
 				>
 					{image ? (
-						<img src={image} alt="Preview" className="image-preview" />
+						<div className="image-container">
+							<img src={image} alt="Preview" className="image-preview" />
+							<button
+								className="remove-image-btn"
+								onClick={() => {
+									setImage(null);
+									setFile(null);
+									setFoundSimilar(null);
+								}}
+							>
+								✕
+							</button>
+						</div>
 					) : (
 						<div className="upload-content">
 							<label htmlFor="fileUpload" className="btn-upload">
@@ -128,6 +140,7 @@ export default function MainPage() {
 									onChange={handleFileSelect}
 								/>
 							</label>
+							<p>or drag and drop image here</p>
 						</div>
 					)}
 				</div>
