@@ -34,6 +34,15 @@ export default function RecentReciepsProfile() {
 		).values(),
 	];
 
+	if (uniqueRecipes.length === 0) {
+		return (
+			<section className="recipes-section">
+				<h2>Recent Recipes</h2>
+				<p className="no-recipes">You haven't searched for any recipes yet</p>
+			</section>
+		);
+	}
+
 	return (
 		<section className="recipes-section">
 			<h2>Recent Recipes</h2>

@@ -12,9 +12,23 @@ export default function Login() {
 		try {
 			setError("");
 			setLoading(true);
-			const loggedUser = await signInWithGoogle();
-			setUser(loggedUser);
-			navigate(-1); // Go back to the previous page
+			const result = await signInWithGoogle();
+			const user = result.user;
+
+			// Create user profile data
+			const userProfile = {
+				name: user.displayName,
+				email: user.email,
+				photoURL: user.photoURL,
+				bio: "",
+				utensils: "",
+			};
+
+			// Set user data
+			setUser(userProfile);
+
+			// Navigate to profile page
+			navigate("/profile");
 		} catch (error) {
 			console.error("Sign-in error:", error);
 			setError("Failed to sign in with Google: " + error.message);
@@ -57,7 +71,6 @@ export default function Login() {
 						className="google-signin-button"
 						disabled={loading}
 					>
-						
 						{loading ? "Signing in..." : "Sign in with Google"}
 					</button>
 					<div className="or-divider">

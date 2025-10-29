@@ -53,18 +53,21 @@ const ShareButton = ({ recipeData }) => {
 	};
 
 	return (
-		<div className="share-button-container" onClick={handleShare}>
-			{isLoading ? (
-				<div className="share-loading">
-					<div className="share-spinner"></div>
-				</div>
-			) : (
-				<i>↗</i>
-			)}
-			{showTooltip && (
-				<div className="share-tooltip">Link copied to clipboard!</div>
-			)}
-		</div>
+		<button className="action-button-s" onClick={handleShare}>
+			<div className="share-button-container">
+				{isLoading ? (
+					<div className="share-loading">
+						<div className="share-spinner"></div>
+					</div>
+				) : (
+					<i>↗</i>
+				)}
+				{showTooltip && (
+					<div className="share-tooltip">Link copied to clipboard!</div>
+				)}
+			</div>
+			<span>Share</span>
+		</button>
 	);
 };
 

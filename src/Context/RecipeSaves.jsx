@@ -28,8 +28,15 @@ export function SavesProvider({ children }) {
 
 	const isSaved = (recipeText) => saves.some((r) => r.aiText === recipeText);
 
+	const clearAllSaves = () => {
+		setSaves([]);
+		localStorage.removeItem("saves");
+	};
+
 	return (
-		<SavesContext.Provider value={{ saves, addSave, removeSave, isSaved }}>
+		<SavesContext.Provider
+			value={{ saves, addSave, removeSave, isSaved, clearAllSaves }}
+		>
 			{children}
 		</SavesContext.Provider>
 	);

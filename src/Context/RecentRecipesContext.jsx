@@ -37,8 +37,15 @@ export function RecentRecipesProvider({ children }) {
 		});
 	};
 
+	const clearAllRecent = () => {
+		setRecentRecipes([]);
+		localStorage.removeItem("recentRecipes");
+	};
+
 	return (
-		<RecentRecipesContext.Provider value={{ recentRecipes, addRecent }}>
+		<RecentRecipesContext.Provider
+			value={{ recentRecipes, addRecent, clearAllRecent }}
+		>
 			{children}
 		</RecentRecipesContext.Provider>
 	);
