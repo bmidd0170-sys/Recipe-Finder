@@ -8,8 +8,8 @@ import { useSaves } from "../Context/RecipeSaves";
 import { useRecentRecipes } from "../Context/RecentRecipesContext";
 
 export default function Profile() {
-	const { profileImage, setProfileImage } = useProfile();
-	const { currentUser, signOut } = useAuth();
+	const { profileImage, setProfileImage, resetProfile } = useProfile();
+	const { currentUser, logout } = useAuth();
 	const navigate = useNavigate();
 	const { clearAllSaves } = useSaves();
 	const { clearAllRecent } = useRecentRecipes();
@@ -29,45 +29,52 @@ export default function Profile() {
 	};
 
 	useEffect(() => {
-		if (currentUser) {
-			// Set user profile data when logged in
-			setUserProfile((prev) => ({
-				...prev,
-				name: currentUser.displayName || "",
-				email: currentUser.email || "",
-			}));
+		const placeholderImage = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-			// Handle profile image
-			const loadProfileImage = async () => {
-				if (currentUser.photoURL) {
-					try {
-						// Fetch the image to ensure it's accessible
-						const response = await fetch(currentUser.photoURL);
-						if (response.ok) {
-							setProfileImage(currentUser.photoURL);
-						} else {
-							console.warn("Could not load Google profile image");
-						}
-					} catch (error) {
-						console.error("Error loading Google profile image:", error);
-					}
-				}
-			};
-
-			loadProfileImage();
-		} else {
-			// Reset to empty state when no user is logged in
+		if (!currentUser) {
 			setUserProfile(emptyState);
-			setProfileImage("https://cdn-icons-png.flaticon.com/512/847/847969.png");
+			setProfileImage(placeholderImage);
 			navigate("/login", { replace: true });
+			return;
 		}
-	}, [currentUser, setProfileImage, navigate]);
+
+		// Set user profile data when logged in
+		setUserProfile({
+			name: currentUser.displayName || "",
+			email: currentUser.email || "",
+			bio: "",
+			utensils: ""
+		});
+
+		// Handle profile image
+		if (!currentUser.photoURL) {
+			setProfileImage(placeholderImage);
+			return;
+		}
+
+		// Load profile image
+		const img = new Image();
+		img.onload = () => setProfileImage(currentUser.photoURL);
+		img.onerror = () => setProfileImage(placeholderImage);
+		img.src = currentUser.photoURL;
+
+		return () => {
+			// Cleanup
+			img.onload = null;
+			img.onerror = null;
+		};
+	}, [currentUser, navigate]);
 
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
 			const reader = new FileReader();
-			reader.onload = () => setProfileImage(reader.result);
+			reader.onload = () => {
+				const imageDataUrl = reader.result;
+				setProfileImage(imageDataUrl);
+				// Store the custom profile image in localStorage
+				localStorage.setItem('userProfileImage', imageDataUrl);
+			};
 			reader.readAsDataURL(file);
 		}
 	};
@@ -94,6 +101,10 @@ export default function Profile() {
 						src={profileImage}
 						alt="Profile"
 						style={{ width: "120px", height: "120px", borderRadius: "50%" }}
+						onError={(e) => {
+							console.warn("Failed to load profile image, using placeholder");
+							e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+						}}
 					/>
 				</div>
 
@@ -145,7 +156,7 @@ export default function Profile() {
 					className="sign-out-button"
 					onClick={async () => {
 						try {
-							// Clear all user data including profile name
+							// Reset all profile data
 							setUserProfile({
 								name: "",
 								email: "",
@@ -153,19 +164,21 @@ export default function Profile() {
 								utensils: "",
 							});
 
-							// Set the placeholder profile image
-							setProfileImage(
-								"https://cdn-icons-png.flaticon.com/512/847/847969.png"
-							);
+							// Reset profile image using context function
+							resetProfile();
 
-							// Clear all saved and recent recipes from both storage and state
+							// Clear all recipes data from local storage
+							localStorage.removeItem('recentRecipes');
+							localStorage.removeItem('savedRecipes');
+
+							// Clear recipe contexts
 							clearAllSaves();
 							clearAllRecent();
-
-							// Sign out immediately
-							await signOut();
-
-							// Redirect to login page
+							
+							// Sign out from Firebase
+							await logout();
+							
+							// Navigate to login page and prevent going back
 							navigate("/login", { replace: true });
 						} catch (error) {
 							console.error("Error signing out:", error);

@@ -48,12 +48,15 @@ export default function ResultsPage() {
 		} else if (location.state) {
 			// If no URL parameters, use location state
 			const { image, aiText, filters } = location.state;
-			setRecipeData({
+			const newRecipe = {
 				image,
 				aiText,
 				filters,
 				title: extractTitle(aiText),
-			});
+			};
+			setRecipeData(newRecipe);
+			// Add to recent recipes
+			addRecent(newRecipe);
 		}
 	}, [searchParams, location.state, addRecent]);
 

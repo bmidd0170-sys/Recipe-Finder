@@ -44,7 +44,12 @@ export function useGenerateRecipe() {
                 content: [
                   {
                     type: "text",
-                    text: `Describe a recipe based on this image and filters. Include instructions, ingredients, and filters: ${JSON.stringify(filters)}`
+                    text: `Generate a detailed recipe for ${filters.recipeName || 'the dish'} shown in this image. Include:
+1. A list of all required ingredients with measurements
+2. Step-by-step cooking instructions
+3. Cooking time and difficulty level
+4. Tips for best results
+${JSON.stringify(filters)}`
                   },
                   {
                     type: "image_url",

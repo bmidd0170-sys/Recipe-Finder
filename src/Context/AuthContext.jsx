@@ -77,6 +77,7 @@ export function AuthProvider({ children }) {
 		login,
 		signInWithGoogle,
 		logout,
+		// We don't need setUser as Firebase handles the user state
 	};
 
 	return (

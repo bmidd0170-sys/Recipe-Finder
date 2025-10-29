@@ -5,29 +5,16 @@ import { useNavigate, Link } from "react-router-dom";
 export default function Login() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-	const { signInWithGoogle, setUser } = useAuth();
+	const { signInWithGoogle } = useAuth();
 	const navigate = useNavigate();
 
 	const handleLogin = async () => {
 		try {
 			setError("");
 			setLoading(true);
-			const result = await signInWithGoogle();
-			const user = result.user;
+			await signInWithGoogle();
 
-			// Create user profile data
-			const userProfile = {
-				name: user.displayName,
-				email: user.email,
-				photoURL: user.photoURL,
-				bio: "",
-				utensils: "",
-			};
-
-			// Set user data
-			setUser(userProfile);
-
-			// Navigate to profile page
+			// Navigate to profile page after successful sign in
 			navigate("/profile");
 		} catch (error) {
 			console.error("Sign-in error:", error);
