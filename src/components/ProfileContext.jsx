@@ -10,15 +10,17 @@ export function ProfileProvider({ children }) {
 
 	const resetProfile = () => {
 		setProfileImage(defaultImage);
-		localStorage.removeItem('userProfileImage');
+		localStorage.removeItem("userProfileImage");
 	};
 
 	return (
-		<ProfileContext.Provider value={{ 
-			profileImage, 
-			setProfileImage,
-			resetProfile
-		}}>
+		<ProfileContext.Provider
+			value={{
+				profileImage,
+				setProfileImage,
+				resetProfile,
+			}}
+		>
 			{children}
 		</ProfileContext.Provider>
 	);

@@ -8,7 +8,7 @@ export default function LoadingPage() {
 	const location = useLocation();
 	const { mutateAsync } = useGenerateRecipe();
 	const { file, filters, image } = location.state;
-	
+
 	useEffect(() => {
 		let isSubscribed = true;
 		let hasStartedGeneration = false;
@@ -20,7 +20,7 @@ export default function LoadingPage() {
 
 			try {
 				const aiText = await mutateAsync({ file, filters });
-				
+
 				// Only proceed if component is still mounted
 				if (isSubscribed) {
 					// Ensure loading screen is visible for at least 1 second
