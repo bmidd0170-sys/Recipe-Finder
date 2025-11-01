@@ -1,11 +1,8 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../config/firebase";
-
 // Local storage key for feedback data
 const FEEDBACK_STORAGE_KEY = "recipeFinder_feedback";
 
 /**
- * Save feedback to local file (localStorage) and optionally to Firebase
+ * Save feedback to local storage only (no external services)
  * @param {Object} feedbackData - The feedback data to save
  * @returns {Promise<boolean>} - Success status
  */
@@ -14,18 +11,21 @@ export const saveFeedbackToFile = async (feedbackData) => {
         // Get existing feedback from localStorage
         const existingFeedback = JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || "[]");
         
-        // Create new feedback entry
+        // Generate a unique ID for this feedback
+        const uniqueId = `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Create new feedback entry with local user info only
         const newFeedback = {
-            id: Date.now().toString(),
+            id: uniqueId,
             message: feedbackData.message,
-            userEmail: feedbackData.userEmail || "Anonymous",
-            userId: feedbackData.userId || "anonymous",
             timestamp: new Date().toISOString(),
             status: "pending",
             category: feedbackData.category || "general",
             rating: feedbackData.rating || null,
             userAgent: navigator.userAgent,
-            url: window.location.href
+            url: window.location.href,
+            sessionId: getSessionId(), // Generate session-based identifier
+            deviceInfo: getDeviceInfo()
         };
         
         // Add to existing feedback array
@@ -37,27 +37,39 @@ export const saveFeedbackToFile = async (feedbackData) => {
         // Save to localStorage
         localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(trimmedFeedback));
         
-        // Also try to save to Firebase (optional - won't fail if Firebase is down)
-        try {
-            await addDoc(collection(db, "feedback"), {
-                message: feedbackData.message,
-                userEmail: feedbackData.userEmail || "Anonymous",
-                userId: feedbackData.userId || "anonymous",
-                timestamp: serverTimestamp(),
-                category: feedbackData.category || "general",
-                rating: feedbackData.rating || null,
-                userAgent: navigator.userAgent,
-                url: window.location.href
-            });
-        } catch (firebaseError) {
-            console.warn("Firebase save failed, but local save succeeded:", firebaseError);
-        }
-        
+        console.log("Feedback saved locally:", newFeedback.id);
         return true;
     } catch (error) {
         console.error("Error saving feedback:", error);
         return false;
     }
+};
+
+/**
+ * Generate a session-based identifier (no personal info)
+ * @returns {string} - Session identifier
+ */
+const getSessionId = () => {
+    let sessionId = sessionStorage.getItem('recipe_finder_session');
+    if (!sessionId) {
+        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem('recipe_finder_session', sessionId);
+    }
+    return sessionId;
+};
+
+/**
+ * Get basic device info (no personal data)
+ * @returns {Object} - Device information
+ */
+const getDeviceInfo = () => {
+    return {
+        screenResolution: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        platform: navigator.platform,
+        isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+        timestamp: new Date().toISOString()
+    };
 };
 
 /**

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "../Context/AuthContext";
 import { saveFeedbackToFile } from "../components/FeedbackHandler";
 import "../App.css";
 
@@ -13,7 +12,6 @@ export default function Feedback() {
 		success: false,
 		message: "",
 	});
-	const { currentUser } = useAuth();
 
 	const handleChange = (e) => {
 		setFeedback(e.target.value);
@@ -35,8 +33,6 @@ export default function Feedback() {
 		try {
 			const feedbackData = {
 				message: feedback,
-				userEmail: currentUser?.email || "Anonymous",
-				userId: currentUser?.uid || "anonymous",
 				category: category,
 				rating: rating > 0 ? rating : null
 			};

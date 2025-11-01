@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../Context/AuthContext";
 import { 
     getAllFeedback, 
     getFeedbackStats, 
@@ -8,10 +9,16 @@ import {
 } from "./FeedbackHandler";
 
 export default function FeedbackViewer() {
+    const { currentUser } = useAuth();
     const [feedbacks, setFeedbacks] = useState([]);
     const [stats, setStats] = useState({});
     const [filter, setFilter] = useState("all");
     const [sortBy, setSortBy] = useState("newest");
+
+    // Check if current user is an admin
+    const isAdmin = currentUser && currentUser.email && 
+        (currentUser.email === 'bmidd0170@launchpadphilly.org' || 
+         currentUser.email === 'braydenmiddlebrooks@gmail.com');
 
     useEffect(() => {
         loadFeedback();
@@ -76,6 +83,19 @@ export default function FeedbackViewer() {
         if (!rating) return <span className="no-rating">No rating</span>;
         return "★".repeat(rating) + "☆".repeat(5 - rating);
     };
+
+    // If user is not an admin, show unauthorized message
+    if (!isAdmin) {
+        return (
+            <div className="feedback-viewer">
+                <div className="unauthorized-access">
+                    <h2>Unauthorized Access</h2>
+                    <p>You don't have permission to view this page.</p>
+                    <p>Only administrators can access the feedback management system.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="feedback-viewer">
@@ -155,7 +175,7 @@ export default function FeedbackViewer() {
                                     <span className="feedback-id">#{feedback.id}</span>
                                     <span className="feedback-category">{feedback.category}</span>
                                     <span className="feedback-date">{formatDate(feedback.timestamp)}</span>
-                                    <span className="feedback-user">{feedback.userEmail}</span>
+                                    <span className="feedback-session">Session: {feedback.sessionId || 'Unknown'}</span>
                                 </div>
                                 <div className="feedback-actions">
                                     {feedback.rating && (

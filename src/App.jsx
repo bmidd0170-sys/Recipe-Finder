@@ -4,7 +4,9 @@ import MainPage from "./pages/MainPage";
 import LoadingPage from "./pages/LoadingPage";
 import Profile from "./pages/Profile";
 import AdminFeedback from "./pages/AdminFeedback";
+import FeedbackViewer from "./components/FeedbackViewer";
 import { useProfile } from "./components/ProfileContext";
+import { useAuth } from "./Context/AuthContext";
 import SavedRecipes from "./pages/SavedRecieps";
 import ResultsPage from "./pages/ResultsPage";
 import Login from "./pages/Login";
@@ -14,15 +16,18 @@ import { RecentRecipesProvider } from "./Context/RecentRecipesContext";
 import { SavesProvider } from "./Context/RecipeSaves";
 import { AuthProvider } from "./Context/AuthContext";
 
-export default function RecipeFinder() {
+function AppContent() {
 	const { profileImage } = useProfile(); // ✅ access shared image
+	const { currentUser } = useAuth();
+
+	// Check if current user is an admin
+	const isAdmin = currentUser && currentUser.email && 
+		(currentUser.email === 'bmidd0170@launchpadphilly.org' || 
+		 currentUser.email === 'braydenmiddlebrooks@gmail.com');
 
 	return (
-		<AuthProvider>
-			<SavesProvider>
-				<RecentRecipesProvider>
-					<div className="app container">
-						<header className="header">
+		<div className="app container">
+			<header className="header">
 							<div className="brand">
 								{/* Profile Link with Image */}
 								<Link to="/profile" className="profile">
@@ -54,10 +59,15 @@ export default function RecipeFinder() {
 									Results
 								</Link>
 								{/* Feedback Button */}
-
 								<Link to="/feedback" className="Feedback-button">
 									Feedback
 								</Link>
+								{/* Admin Feedback Viewer - Only show for admin users */}
+								{isAdmin && (
+									<Link to="/admin/feedback-viewer" className="saved-recipes-link">
+										View Feedback
+									</Link>
+								)}
 							</div>
 						</header>
 
@@ -94,6 +104,14 @@ export default function RecipeFinder() {
 									</ProtectedRoute>
 								}
 							/>
+							<Route 
+								path="/admin/feedback-viewer" 
+								element={
+									<ProtectedRoute>
+										<FeedbackViewer />
+									</ProtectedRoute>
+								}
+							/>
 						</Routes>
 
 						{/* Footer */}
@@ -101,6 +119,15 @@ export default function RecipeFinder() {
 							<p>&copy; 2025 Recipe Finder. All rights reserved.</p>
 						</footer>
 					</div>
+	);
+}
+
+export default function RecipeFinder() {
+	return (
+		<AuthProvider>
+			<SavesProvider>
+				<RecentRecipesProvider>
+					<AppContent />
 				</RecentRecipesProvider>
 			</SavesProvider>
 		</AuthProvider>
