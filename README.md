@@ -2,6 +2,9 @@
 
 An intelligent recipe discovery app that uses AI to analyze food images and generate personalized recipes. Upload a photo of any dish or explore trending recipes to get detailed cooking instructions tailored to your dietary preferences.
 
+## 🎯 Problem Statement
+
+Many people face the challenge of cooking for multiple household members with varying dietary restrictions and preferences. Home cooks often struggle to create meals that accommodate everyone's needs while working within their own cooking skill limitations. Recipe Finder addresses this problem by providing an intelligent solution that generates personalized recipes based on visual inputs and customizable dietary filters, making it easy for anyone to cook delicious meals that satisfy everyone at the table.
 ## 📋 Table of Contents
 
 - [✨ Features](#-features)
