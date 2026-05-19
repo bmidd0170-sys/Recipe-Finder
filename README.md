@@ -1,5 +1,11 @@
 # Recipe Finder 🍳
 
+A React + Vite app for AI-powered recipe discovery and personalized recipe collections.
+
+🔗 Live Demo: https://recipe-finder-gamma-ten.vercel.app
+
+**Topics:** recipes · react · vite · firebase · openai · gpt-4 · ai · food · vercel · image-recognition
+
 An intelligent recipe discovery app that uses AI to analyze food images and generate personalized recipes. Upload a photo of any dish or explore trending recipes to get detailed cooking instructions tailored to your dietary preferences.
 
 ## 🎯 Problem Statement
